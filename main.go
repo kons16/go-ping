@@ -12,7 +12,6 @@ import (
 func checkSum() {}
 
 // sendPing は ping を送信する
-// int soc,char *name,int len,unsigned short sqc,struct timeval *sendtime
 func sendPing(conn net.Conn, name string, len int, sqc int, sendTime *time.Time) int {}
 
 // checkPacket は受信したパケットを確認する
