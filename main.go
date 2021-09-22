@@ -129,7 +129,7 @@ func pingCheck(ipStr string, len int, times int, timeOutSec int) (int, error) {
 	var total, totalNo int
 
 	// ソケットを作成
-	conn, err := net.Dial("ip4:1", ipStr)
+	conn, err := net.ListenIP("ip4:icmp", nil)
 	if err != nil {
 		fmt.Println("aaa")
 		fmt.Sprintf("%s", err)
@@ -137,26 +137,18 @@ func pingCheck(ipStr string, len int, times int, timeOutSec int) (int, error) {
 	}
 	defer conn.Close()
 
-	for i := 0; i < times; i++ {
-		// ICMPエコーリクエストを送信する
-		ret = sendPing(conn, ipStr, len, uint16(i+1&0xffff), &sendTime)
-		if ret == 0 {
-			// ICMPエコーリプライを受信する
-			ret = recvPing(conn, len, uint16(i+1&0xffff), &sendTime, timeOutSec)
-			if ret >= 0 {
-				total += ret
-				totalNo++
-			}
+	// ICMPエコーリクエストを送信する
+	ret = sendPing(conn, ipStr, len, uint16(0&0xffff), &sendTime)
+	if ret == 0 {
+		// ICMPエコーリプライを受信する
+		ret = recvPing(conn, len, uint16(0&0xffff), &sendTime, timeOutSec)
+		if ret >= 0 {
+			total += ret
+			totalNo++
 		}
-
-		time.Sleep(1)
 	}
 
-	if totalNo > 0 {
-		return total / totalNo, nil
-	} else {
-		return -1, nil
-	}
+	return 0, nil
 }
 
 func main() {
